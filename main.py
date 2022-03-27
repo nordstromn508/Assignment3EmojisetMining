@@ -4,11 +4,19 @@ main.py
 
     @author Nicholas Nordstrom
 """
+import numpy as np
 import data_loader
 from mlxtend.frequent_patterns import apriori
 from mlxtend.preprocessing import TransactionEncoder
 
 INPUT_FILE = "Emojisets_.xlsx"
+
+
+def _make_small_nan_(row):
+    if len(row) == 1:
+        return np.NAN
+    else:
+        return row
 
 
 def main():
@@ -29,7 +37,7 @@ def main():
     print('DataFrame Columns:\n', df.columns)
     print('DataFrame Values:\n', df)
 
-    dataset = df['Emojiset'].replace(',', '', regex=True)  # .replace(' ', '', regex=True).replace('️', '', regex=True)
+    dataset = df['Emojiset'].replace(',', '', regex=True).replace(' ', '', regex=True)  # .replace('️', '', regex=True)
     print('Dataset:\n', dataset)
 
     #   Frequent Itemset Mining
@@ -43,8 +51,15 @@ def main():
     print('Processed Dataframe Values:\n', df_preprocessed)
 
     # process
-    result = data_loader.to_dataframe(apriori(df_preprocessed, min_support=.1, use_colnames=True))
+    result = apriori(df_preprocessed, min_support=.1, use_colnames=True)
+    result['itemsets'] = result['itemsets'].apply(lambda row: _make_small_nan_(row))
+    result = result.dropna()
+    print('Result Columns:\n', result.columns)
+
     print('Result:\n', result.sort_values('support', ascending=False))
+    # data_loader.export_dataframe(result.sort_values('support', ascending=False), 'Emoji FIM.xlsx')
+
+    print('Unique emoji:\n', np.unique(result['itemsets']))
 
     # Task 3 Algorithm Analysis
     """
