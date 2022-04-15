@@ -74,3 +74,27 @@ def normalize_read_csv(ref: str):
     :return:read, normalized dataframe
     """
     return _normalize_dataframe_(read_csv(ref))
+
+
+def read_excel(ref: str):
+    """
+    Reads a single Excel file into memory
+    :param ref: relative or full path to Excel file to read in
+    :return: pandas DataFrame read into memory from an Excel file
+    """
+    return pd.read_excel(ref, header=1)
+
+
+def to_dataframe(data, columns=None):
+    """
+    casts data to a DataFrame datatype
+    :param columns: names of columns
+    :param data: data to cast
+    :return: DataFrame representation of the data
+    """
+    if columns is None:
+        df = pd.DataFrame(data)
+    else:
+        df = pd.DataFrame(data, columns=columns)
+
+    return df
